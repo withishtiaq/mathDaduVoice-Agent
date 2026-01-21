@@ -4,31 +4,33 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# --- API Key সেটআপ (Render Environment থেকে নেবে) ---
+# --- API Key সেটআপ ---
 api_key = os.environ.get("GOOGLE_API_KEY")
+# লোকাল টেস্টের জন্য হার্ডকোড করতে পারেন, কিন্তু রেন্ডারে env ভেরিয়েবল লাগবে
+# if not api_key: api_key = "আপনার_API_KEY_এখানে_দিন" 
 
 if not api_key:
-    # লোকাল টেস্টের জন্য ওয়ার্নিং, কিন্তু রেন্ডারে সমস্যা হবে না যদি env set থাকে
-    print("Warning: GOOGLE_API_KEY not found via environment variable.")
+    print("Warning: GOOGLE_API_KEY not found.")
 else:
     genai.configure(api_key=api_key)
 
-# --- দাদুর চরিত্র কনফিগারেশন ---
+# --- রাগী দাদুর কনফিগারেশন ---
 generation_config = {
-  "temperature": 0.5, # একটু সৃজনশীল হবে
+  "temperature": 0.6, # একটু বেশি রাগী প্রতিক্রিয়া দেখানোর জন্য
   "top_p": 0.95,
   "top_k": 64,
-  "max_output_tokens": 200, # উত্তর ছোট রাখবে
+  "max_output_tokens": 250, # উত্তর ছোট এবং কড়া হবে
 }
 
-# দাদুর জন্য বিশেষ নির্দেশনা
+# দাদুর জন্য কড়া নির্দেশনা
 system_instruction = """
-তুমি একজন ৭৫ বছর বয়সী অত্যন্ত জ্ঞানী, শান্ত এবং স্নেহপরায়ণ বাঙালি দাদু।
-১. ব্যবহারকারী তোমার নাতি বা নাতনি। তাদের "দাদুভাই", "সোনা", "মনা" বা "দিদিভাই" বলে সম্বোধন করবে।
-২. তোমার বাচনভঙ্গি হবে ধীরস্থির এবং মায়াভরা।
-৩. উত্তরগুলো খুব ছোট হবে (সর্বোচ্চ ২-৩ বাক্যে), যেন মনে হয় ফোনে কথা বলছো।
-৪. কোনো কঠিন বইয়ের ভাষা ব্যবহার করবে না। একদম ঘরোয়া, সাবলীল বাংলায় কথা বলবে।
-৫. গণিত বা যেকোনো বিষয় গল্পের ছলে বা সহজ উদাহরণ দিয়ে বোঝাবে।
+তুমি একজন ৭৫ বছর বয়সী অত্যন্ত বদমেজাজি এবং রাগী অঙ্ক শিক্ষক দাদু।
+তোমার বৈশিষ্ট্য:
+১. তুমি অঙ্ক (Mathematics) ছাড়া পৃথিবীর আর কোনো বিষয় বোঝো না এবং বুঝতেও চাও না।
+২. ব্যবহারকারী যদি অঙ্ক বা গণিত সম্পর্কিত কোনো প্রশ্ন করে, তবে তুমি সেটা বুঝিয়ে বলবে, কিন্তু তোমার সুর হবে কড়া শিক্ষকের মতো। (যেমন: "এটাও বুঝিস না? শোন...", "মন দিয়ে শোন গাধা কোথাকার...")।
+৩. ব্যবহারকারী যদি অঙ্ক ছাড়া অন্য যেকোনো বিষয় নিয়ে কথা বলে (যেমন: "কেমন আছো?", "আবহাওয়া কেমন?", "গল্প বলো"), তুমি ভীষণ রেগে যাবে।
+৪. রেগে গিয়ে তুমি তাদের বকাবকি করবে। বলবে: "অঙ্ক বাদ দিয়ে ফাজলামি হচ্ছে?", "তোর মাথায় কি গোবর ভরা? যা অঙ্ক কর গিয়ে।", "আমার সময় নষ্ট করবি না।"
+৫. তুমি সব সময় আঞ্চলিক ও কড়া ভাষায় কথা বলবে। তুমি ব্যবহারকারীকে "তুই" বা "তোরা" বলে সম্বোধন করবে।
 """
 
 # মডেল সিলেকশন
@@ -50,7 +52,6 @@ except Exception as e:
 
 @app.route('/')
 def home():
-    # ফ্রন্টএন্ড লোড করবে
     return render_template('index.html')
 
 @app.route('/chat', methods=['POST'])
@@ -61,10 +62,10 @@ def chat():
         user_message = data.get('message')
 
         if not user_message:
-            return jsonify({"reply": "কিছু শুনতে পাইনি দাদুভাই, আবার বলো?"})
+            return jsonify({"reply": "কি বললি শুনতে পাইনি। জোরে বল!"})
 
         if not model:
-             return jsonify({"reply": "আমার শরীরটা ভালো লাগছে না, পরে কথা বলি?"})
+             return jsonify({"reply": "আমার মেজাজ গরম হয়ে আছে, এখন কথা বলবো না।"})
 
         # দাদুর উত্তর তৈরি হচ্ছে
         response = chat_session.send_message(user_message)
@@ -75,14 +76,14 @@ def chat():
         return jsonify({"reply": clean_text})
 
     except Exception as e:
-        # এরর হ্যান্ডলিং এবং সেশন রিসেট
+        # এরর হলে সেশন রিসেট
         try:
             chat_session = model.start_chat(history=[])
             response = model.generate_content(user_message)
             clean_text = response.text.replace("*", "").replace("#", "")
             return jsonify({"reply": clean_text})
         except:
-            return jsonify({"reply": "নেটে একটু সমস্যা হচ্ছে দাদুভাই, আবার চেষ্টা করো।"})
+            return jsonify({"reply": "নেটে সমস্যা করছে, অঙ্ক করতে দে আমাকে!"})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
