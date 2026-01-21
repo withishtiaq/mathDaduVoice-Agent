@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dadu Voice Agent</title>
+    <title>রাগী অঙ্ক দাদু</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         body {
@@ -18,123 +18,138 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* একটি সুন্দর নীল গ্রেডিয়েন্ট ব্যাকগ্রাউন্ড */
-            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            /* আপনার দেওয়া ব্যাকগ্রাউন্ড ইমেজ */
+            background-image: url('/static/math_bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        .container {
+        .glass-container {
             text-align: center;
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            height: 100%;
+            width: 90%;
+            max-width: 400px;
+            height: 80%;
+            /* গ্লাস ইফেক্ট */
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.3);
+            padding: 20px;
         }
 
-        /* দাদুর ছবি রাখার গোল ফ্রেম */
+        .header-title {
+            color: #1a237e; /* গাঢ় নীল */
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+
+        /* দাদুর ছবির ফ্রেম */
         .avatar-wrapper {
             position: relative;
-            width: 180px;
-            height: 180px;
-            margin-bottom: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border: 4px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            width: 200px;
+            height: 200px;
+            margin-bottom: 30px;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease;
         }
 
-        /* দাদুর ইমেজ */
+        /* দাদুর ইমেজ - আপনার দেওয়া ছবি */
         .avatar-wrapper img {
-            width: 90%;
-            height: 90%;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
-            border-radius: 50%;
+            /* একটু শ্যাডো দেওয়া হলো যাতে ভেসে থাকে */
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
             z-index: 2;
         }
 
-        /* কথা বলার সময় পেছনের এনিমেশন */
+        /* কথা বলার সময় পেছনের এনিমেশন (লাল রঙের, কারণ রাগী) */
         .ripple {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 100%;
-            height: 100%;
+            width: 90%;
+            height: 90%;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 50, 50, 0.5); /* লাল আভা */
             z-index: 1;
-            animation: ripple-effect 1.5s infinite;
-            display: none; /* শুরুতে বন্ধ থাকবে */
+            animation: ripple-effect 1s infinite;
+            display: none; 
         }
 
         /* স্ট্যাটাস টেক্সট */
         .status-text {
-            font-size: 1.2rem;
-            color: #444;
+            font-size: 1.1rem;
+            color: #333;
             font-weight: 600;
             min-height: 30px;
             margin-bottom: 30px;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.5);
+            padding: 5px 15px;
+            border-radius: 15px;
         }
 
         /* মাইক বাটন */
         .mic-btn {
-            width: 80px;
-            height: 80px;
+            width: 75px;
+            height: 75px;
             border-radius: 50%;
             border: none;
-            background: white;
-            color: #4facfe;
-            font-size: 32px;
+            background: #1a237e; /* গাঢ় নীল */
+            color: white;
+            font-size: 30px;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .mic-btn:active {
-            transform: scale(0.95);
-        }
+        .mic-btn:active { transform: scale(0.95); }
 
         /* শোনার সময় মাইক বাটন লাল হবে */
         .mic-btn.listening {
-            background: #ff6b6b;
-            color: white;
-            animation: pulse 1.5s infinite;
+            background: #d32f2f; /* লাল */
+            animation: pulse 1s infinite;
         }
 
-        /* এনিমেশন ফ্রেম */
         @keyframes ripple-effect {
-            0% { width: 100%; height: 100%; opacity: 0.8; }
-            100% { width: 160%; height: 160%; opacity: 0; }
+            0% { width: 90%; height: 90%; opacity: 0.7; }
+            100% { width: 150%; height: 150%; opacity: 0; }
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
-            70% { box-shadow: 0 0 0 20px rgba(255, 107, 107, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(211, 47, 47, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="glass-container">
+    <div class="header-title">রাগী অঙ্ক দাদু 🤖📐</div>
     
     <div class="avatar-wrapper" id="avatar-box">
         <div class="ripple" id="ripple-ring"></div>
-        <img src="https://cdn-icons-png.flaticon.com/512/3048/3048122.png" alt="Grandpa Agent">
+        <img src="/static/angry_dadu.png" alt="Angry Math Dadu">
     </div>
 
-    <div class="status-text" id="status">কথা বলতে মাইকে চাপ দাও</div>
+    <div class="status-text" id="status">অঙ্ক নিয়ে প্রশ্ন করতে মাইকে চাপ দে!</div>
 
     <button class="mic-btn" id="mic-btn">
         <i class="fas fa-microphone"></i>
@@ -148,22 +163,18 @@
     const rippleRing = document.getElementById('ripple-ring');
     const avatarBox = document.getElementById('avatar-box');
 
-    // স্পিচ রিকগনিশন সেটআপ
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
-    recognition.lang = 'bn-BD'; // বাংলা
+    recognition.lang = 'bn-BD'; 
     recognition.interimResults = false;
 
-    // স্পিচ সিন্থেসিস (TTS)
     const synth = window.speechSynthesis;
     let isListening = false;
 
-    // মাইক বাটনে ক্লিক করলে
     micBtn.addEventListener('click', () => {
         if (isListening) {
             stopListening();
         } else {
-            // দাদু কথা বলতে থাকলে থামিয়ে দেবে
             if (synth.speaking) synth.cancel();
             startListening();
         }
@@ -175,14 +186,11 @@
             isListening = true;
             micBtn.classList.add('listening');
             micBtn.innerHTML = '<i class="fas fa-stop"></i>';
-            statusText.innerText = "দাদু শুনছেন...";
-            
-            // শোনার সময় এনিমেশন বন্ধ থাকবে
+            statusText.innerText = "দাদু শুনছেন... 👂";
             rippleRing.style.display = 'none';
             avatarBox.style.transform = "scale(1)";
         } catch (e) {
-            console.error(e);
-            statusText.innerText = "মাইক পারমিশন দরকার!";
+            statusText.innerText = "মাইক চালু কর আগে!";
         }
     }
 
@@ -193,13 +201,11 @@
         micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
     }
 
-    // কথা শোনা শেষ হলে (রেজাল্ট পেলে)
     recognition.onresult = async (event) => {
         stopListening();
         const userText = event.results[0][0].transcript;
-        statusText.innerText = "দাদু ভাবছেন... 🤔";
+        statusText.innerText = "দাদু রেগেমেগে ভাবছেন... 😠";
 
-        // ব্যাকএন্ডে পাঠানো
         try {
             const response = await fetch('/chat', {
                 method: 'POST',
@@ -207,57 +213,51 @@
                 body: JSON.stringify({ message: userText })
             });
             const data = await response.json();
-            
-            // দাদু কথা বলা শুরু করবেন
             speakAsDadu(data.reply);
 
         } catch (error) {
-            statusText.innerText = "দাদু একটু ব্যস্ত, পরে কথা বলো।";
+            statusText.innerText = "নেটে সমস্যা, পরে আসিস!";
         }
     };
 
     recognition.onerror = () => {
         stopListening();
-        statusText.innerText = "কিছু শুনতে পাইনি দাদুভাই।";
+        statusText.innerText = "কি বললি বুঝলাম না। আবার বল!";
     };
 
-    // দাদুর কণ্ঠে কথা বলা (TTS)
     function speakAsDadu(text) {
         if (synth.speaking) synth.cancel();
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'bn-BD';
         
-        // দাদুর গলার টিউনিং (একটু ভারী এবং ধীর)
-        utterance.rate = 0.8; // স্বাভাবিকের চেয়ে স্লো
-        utterance.pitch = 0.7; // একটু গম্ভীর
+        // রাগী দাদুর গলার টিউনিং
+        utterance.rate = 0.95; // একটু দ্রুত এবং কড়া
+        utterance.pitch = 0.6; // গলা ভারী ও গম্ভীর
         
-        // বাংলা ভয়েস খোঁজা
         let voices = synth.getVoices();
         const bnVoice = voices.find(v => v.lang.includes('bn'));
         if (bnVoice) utterance.voice = bnVoice;
 
-        // কথা বলার সময় এনিমেশন চালু
         utterance.onstart = () => {
-            statusText.innerText = "দাদু বলছেন...";
-            rippleRing.style.display = 'block'; // রিপল ইফেক্ট চালু
-            avatarBox.style.transform = "scale(1.1)"; // ছবি একটু বড় হবে
+            statusText.innerText = "দাদু বকাবকি করছেন... 🗣️";
+            rippleRing.style.display = 'block'; // লাল এনিমেশন চালু
+            // কথা বলার সময় রাগে একটু কাঁপবে
+            avatarBox.style.transform = "scale(1.05) rotate(-2deg)"; 
         };
 
         utterance.onend = () => {
-            statusText.innerText = "কথা বলতে মাইকে চাপ দাও";
-            rippleRing.style.display = 'none'; // এনিমেশন বন্ধ
-            avatarBox.style.transform = "scale(1)";
+            statusText.innerText = "অঙ্ক নিয়ে প্রশ্ন করতে মাইকে চাপ দে!";
+            rippleRing.style.display = 'none';
+            avatarBox.style.transform = "scale(1) rotate(0deg)";
         };
 
         synth.speak(utterance);
     }
 
-    // ভয়েস লিস্ট লোড হওয়ার জন্য অপেক্ষা
     synth.onvoiceschanged = () => {
         synth.getVoices();
     };
-
 </script>
 </body>
 </html>
