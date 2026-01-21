@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math AI Voice Agent</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ফন্ট ইম্পোর্ট */
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Hind Siliguri', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            /* আপনার ব্যাকগ্রাউন্ড ইমেজ (static ফোল্ডার থেকে লোড হবে) */
+            background-image: url('/static/background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* গ্লাস ইফেক্ট কন্টেইনার */
+        .glass-container {
+            width: 90%;
+            max-width: 400px;
+            height: 85%;
+            background: rgba(255, 255, 255, 0.1); /* স্বচ্ছ সাদা */
+            backdrop-filter: blur(10px);          /* ব্লার ইফেক্ট */
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* চ্যাট এরিয়া */
+        .chat-area {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            scrollbar-width: none;
+        }
+        .chat-area::-webkit-scrollbar { display: none; }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 1rem;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .bot-msg {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.85);
+            color: #333;
+            border-bottom-left-radius: 2px;
+        }
+
+        .user-msg {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        /* ফুটার এবং মাইক বাটন */
+        .footer {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.1);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .status-text {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            min-height: 20px;
+            text-align: center;
+        }
+
+        .mic-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: #764ba2;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255,255,255,0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .mic-btn:active { transform: scale(0.9); }
+
+        /* কথা শোনার সময় এনিমেশন */
+        .mic-btn.listening {
+            background: #ff4757;
+            color: white;
+            box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(255, 71, 87, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+<div class="glass-container">
+    <div class="header">গণিত বন্ধু 🤖</div>
+    
+    <div class="chat-area" id="chat-box">
+        <div class="message bot-msg">
+            হ্যালো! আমি প্রস্তুত। নিচের মাইক বাটনে চাপ দিয়ে প্রশ্ন করো।
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="status-text" id="status">মাইক আইকনে চাপ দিন</div>
+        <button class="mic-btn" id="mic-btn">
+            <i class="fas fa-microphone"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+    // --- JavaScript Logic ---
+    const micBtn = document.getElementById('mic-btn');
+    const statusText = document.getElementById('status');
+    const chatBox = document.getElementById('chat-box');
+    
+    // ব্রাউজারের ভয়েস ফিচার সাপোর্ট চেক
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    // সেটিংস
+    recognition.lang = 'bn-BD'; // বাংলা ভাষা
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    let isListening = false;
+    const synth = window.speechSynthesis;
+
+    micBtn.addEventListener('click', () => {
+        if (isListening) {
+            recognition.stop();
+        } else {
+            // যদি আগে থেকে কথা বলতে থাকে, থামিয়ে দেবে
+            if (synth.speaking) synth.cancel();
+            
+            try {
+                recognition.start();
+                isListening = true;
+                micBtn.classList.add('listening');
+                micBtn.innerHTML = '<i class="fas fa-stop"></i>';
+                statusText.innerText = "শুনছি... বলুন";
+            } catch (e) {
+                console.error(e);
+                statusText.innerText = "মাইক্রোফোন চালু করা যাচ্ছে না।";
+            }
+        }
+    });
+
+    // কথা শোনা শেষ হলে
+    recognition.onend = () => {
+        isListening = false;
+        micBtn.classList.remove('listening');
+        micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        // statusText.innerText = "প্রসেস করা হচ্ছে..."; // এই লাইনটি পরে আপডেট হবে
+    };
+
+    // রেজাল্ট পেলে
+    recognition.onresult = async (event) => {
+        const userText = event.results[0][0].transcript;
+        addMessage(userText, 'user-msg');
+        statusText.innerText = "উত্তর ভাবছি...";
+
+        // ব্যাকএন্ডে পাঠানো
+        try {
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userText })
+            });
+            const data = await response.json();
+            
+            // উত্তর দেখানো এবং শোনানো
+            addMessage(data.reply, 'bot-msg');
+            statusText.innerText = "উত্তর দিচ্ছি...";
+            speak(data.reply);
+        } catch (error) {
+            statusText.innerText = "সার্ভারে সমস্যা হয়েছে।";
+        }
+    };
+
+    recognition.onerror = (event) => {
+        statusText.innerText = "কিছু শুনতে পাইনি। আবার চেষ্টা করুন।";
+        isListening = false;
+        micBtn.classList.remove('listening');
+        micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+    };
+
+    function addMessage(text, type) {
+        const div = document.createElement('div');
+        div.classList.add('message', type);
+        div.innerText = text;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // টেক্সট টু স্পিচ (TTS) ফাংশন
+    function speak(text) {
+        if (synth.speaking) synth.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'bn-BD';
+        utterance.pitch = 1;
+        utterance.rate = 1;
+        
+        // বাংলা ভয়েস খোঁজা
+        let voices = synth.getVoices();
+        const bnVoice = voices.find(v => v.lang.includes('bn'));
+        if (bnVoice) utterance.voice = bnVoice;
+        
+        synth.speak(utterance);
+        
+        utterance.onend = () => {
+            statusText.innerText = "মাইক আইকনে চাপ দিন";
+        };
+    }
+
+    // প্রথমবার লোড হলে ভয়েস লিস্ট লোড করা
+    synth.onvoiceschanged = () => {
+        synth.getVoices();
+    };
+</script>
+
+</body>
+</html>
