@@ -18,7 +18,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* আপনার দেওয়া ব্যাকগ্রাউন্ড ইমেজ */
+            /* ব্যাকগ্রাউন্ড ইমেজ */
             background-image: url('/static/math_bg.png');
             background-size: cover;
             background-position: center;
@@ -34,9 +34,8 @@
             justify-content: center;
             width: 90%;
             max-width: 400px;
-            height: 80%;
-            /* গ্লাস ইফেক্ট */
-            background: rgba(255, 255, 255, 0.1);
+            height: 85%;
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border-radius: 25px;
@@ -46,71 +45,85 @@
         }
 
         .header-title {
-            color: #1a237e; /* গাঢ় নীল */
+            color: #1a237e;
             font-weight: 700;
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
         }
 
-        /* দাদুর ছবির ফ্রেম */
+        /* --- দাদুর ফ্রেম --- */
         .avatar-wrapper {
             position: relative;
-            width: 200px;
-            height: 200px;
+            width: 220px;
+            height: 220px;
             margin-bottom: 30px;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.2s ease;
         }
 
-        /* দাদুর ইমেজ - আপনার দেওয়া ছবি */
         .avatar-wrapper img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            /* একটু শ্যাডো দেওয়া হলো যাতে ভেসে থাকে */
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
             z-index: 2;
         }
 
-        /* কথা বলার সময় পেছনের এনিমেশন (লাল রঙের, কারণ রাগী) */
-        .ripple {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            height: 90%;
-            border-radius: 50%;
-            background: rgba(255, 50, 50, 0.5); /* লাল আভা */
-            z-index: 1;
-            animation: ripple-effect 1s infinite;
-            display: none; 
+        /* ১. শান্ত অবস্থার অ্যানিমেশন (ভেসে থাকা) */
+        .dadu-idle {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* ২. রাগী অবস্থার অ্যানিমেশন (কাঁপা + লাল আভা) */
+        .dadu-angry {
+            animation: angry-shake 0.5s infinite;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)) !important;
+        }
+
+        @keyframes angry-shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
 
         /* স্ট্যাটাস টেক্সট */
         .status-text {
             font-size: 1.1rem;
-            color: #333;
+            color: #222;
             font-weight: 600;
             min-height: 30px;
-            margin-bottom: 30px;
-            background: rgba(255,255,255,0.5);
-            padding: 5px 15px;
+            margin-bottom: 25px;
+            background: rgba(255,255,255,0.6);
+            padding: 8px 15px;
             border-radius: 15px;
+            width: 80%;
         }
 
         /* মাইক বাটন */
         .mic-btn {
-            width: 75px;
-            height: 75px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             border: none;
-            background: #1a237e; /* গাঢ় নীল */
+            background: #1a237e;
             color: white;
-            font-size: 30px;
+            font-size: 32px;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             transition: all 0.2s ease;
@@ -121,20 +134,14 @@
 
         .mic-btn:active { transform: scale(0.95); }
 
-        /* শোনার সময় মাইক বাটন লাল হবে */
         .mic-btn.listening {
-            background: #d32f2f; /* লাল */
+            background: #d32f2f;
             animation: pulse 1s infinite;
-        }
-
-        @keyframes ripple-effect {
-            0% { width: 90%; height: 90%; opacity: 0.7; }
-            100% { width: 150%; height: 150%; opacity: 0; }
         }
 
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(211, 47, 47, 0); }
+            70% { box-shadow: 0 0 0 20px rgba(211, 47, 47, 0); }
             100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
         }
     </style>
@@ -144,25 +151,23 @@
 <div class="glass-container">
     <div class="header-title">Math Dadu 🤖📐</div>
     
-    <div class="avatar-wrapper" id="avatar-box">
-        <div class="ripple" id="ripple-ring"></div>
-        <img src="/static/angry_dadu.png" alt="Angry Math Dadu">
+    <div class="avatar-wrapper">
+        <img src="/static/angry_dadu.png" alt="Angry Math Dadu" id="dadu-img" class="dadu-idle">
     </div>
 
-    <div class="status-text" id="status">অঙ্ক নিয়ে প্রশ্ন করতে মাইকে চাপ দে!</div>
+    <div class="status-text" id="status">প্রশ্ন করতে মাইকে চাপ দে!</div>
 
     <button class="mic-btn" id="mic-btn">
         <i class="fas fa-microphone"></i>
     </button>
-
 </div>
 
 <script>
     const micBtn = document.getElementById('mic-btn');
     const statusText = document.getElementById('status');
-    const rippleRing = document.getElementById('ripple-ring');
-    const avatarBox = document.getElementById('avatar-box');
+    const daduImg = document.getElementById('dadu-img');
 
+    // স্পিচ রিকগনিশন (Browser API)
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = 'bn-BD'; 
@@ -171,11 +176,12 @@
     const synth = window.speechSynthesis;
     let isListening = false;
 
+    // মাইক বাটন ক্লিক ইভেন্ট
     micBtn.addEventListener('click', () => {
         if (isListening) {
             stopListening();
         } else {
-            if (synth.speaking) synth.cancel();
+            if (synth.speaking) synth.cancel(); // দাদু কথা বলতে থাকলে থামাও
             startListening();
         }
     });
@@ -187,10 +193,13 @@
             micBtn.classList.add('listening');
             micBtn.innerHTML = '<i class="fas fa-stop"></i>';
             statusText.innerText = "দাদু শুনছেন... 👂";
-            rippleRing.style.display = 'none';
-            avatarBox.style.transform = "scale(1)";
+            
+            // শোনার সময় দাদু শান্ত থাকবেন
+            daduImg.classList.add('dadu-idle');
+            daduImg.classList.remove('dadu-angry');
+            
         } catch (e) {
-            statusText.innerText = "মাইক চালু কর আগে!";
+            statusText.innerText = "মাইক পারমিশন দে আগে!";
         }
     }
 
@@ -201,11 +210,13 @@
         micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
     }
 
+    // কথা শোনা শেষ হলে
     recognition.onresult = async (event) => {
         stopListening();
         const userText = event.results[0][0].transcript;
-        statusText.innerText = "দাদু রেগেমেগে ভাবছেন... 😠";
+        statusText.innerText = "দাদু রেগে ভাবছেন... 😠";
 
+        // ব্যাকএন্ডে রিকোয়েস্ট
         try {
             const response = await fetch('/chat', {
                 method: 'POST',
@@ -213,48 +224,56 @@
                 body: JSON.stringify({ message: userText })
             });
             const data = await response.json();
+            
+            // উত্তর বলা শুরু
             speakAsDadu(data.reply);
 
         } catch (error) {
-            statusText.innerText = "নেটে সমস্যা, পরে আসিস!";
+            statusText.innerText = "নেট কানেকশন ঠিক কর!";
         }
     };
 
     recognition.onerror = () => {
         stopListening();
-        statusText.innerText = "কি বললি বুঝলাম না। আবার বল!";
+        statusText.innerText = "বিড়বিড় করছিস কেন? জোরে বল!";
     };
 
+    // দাদুর কথা বলা (TTS) + অ্যানিমেশন
     function speakAsDadu(text) {
         if (synth.speaking) synth.cancel();
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'bn-BD';
         
-        // রাগী দাদুর গলার টিউনিং
-        utterance.rate = 0.95; // একটু দ্রুত এবং কড়া
-        utterance.pitch = 0.6; // গলা ভারী ও গম্ভীর
+        // রাগী গলার টিউনিং
+        utterance.rate = 0.95; 
+        utterance.pitch = 0.6; 
         
+        // বাংলা ভয়েস খোঁজা
         let voices = synth.getVoices();
         const bnVoice = voices.find(v => v.lang.includes('bn'));
         if (bnVoice) utterance.voice = bnVoice;
 
         utterance.onstart = () => {
             statusText.innerText = "দাদু বকাবকি করছেন... 🗣️";
-            rippleRing.style.display = 'block'; // লাল এনিমেশন চালু
-            // কথা বলার সময় রাগে একটু কাঁপবে
-            avatarBox.style.transform = "scale(1.05) rotate(-2deg)"; 
+            
+            // --- অ্যানিমেশন চেঞ্জ: শান্ত -> রাগী ---
+            daduImg.classList.remove('dadu-idle');
+            daduImg.classList.add('dadu-angry');
         };
 
         utterance.onend = () => {
             statusText.innerText = "অঙ্ক নিয়ে প্রশ্ন করতে মাইকে চাপ দে!";
-            rippleRing.style.display = 'none';
-            avatarBox.style.transform = "scale(1) rotate(0deg)";
+            
+            // --- অ্যানিমেশন চেঞ্জ: রাগী -> শান্ত ---
+            daduImg.classList.remove('dadu-angry');
+            daduImg.classList.add('dadu-idle');
         };
 
         synth.speak(utterance);
     }
 
+    // ভয়েস লিস্ট লোড হওয়ার জন্য অপেক্ষা
     synth.onvoiceschanged = () => {
         synth.getVoices();
     };
